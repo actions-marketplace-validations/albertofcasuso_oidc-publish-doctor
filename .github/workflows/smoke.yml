@@ -1,0 +1,44 @@
+name: Test real GitHub OIDC
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      # The Action repository has no package repository metadata yet. Create an
+      # isolated fixture that follows this GitHub repository's actual identity.
+      - name: Create a package fixture (never published)
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { mkdirSync, writeFileSync } from 'node:fs';
+          import { join } from 'node:path';
+          const directory = join(process.env.RUNNER_TEMP, 'oidc-doctor-package');
+          mkdirSync(directory, { recursive: true });
+          writeFileSync(join(directory, 'package.json'), JSON.stringify({
+            name: 'oidc-doctor-smoke',
+            version: '0.0.0',
+            private: true,
+            repository: { type: 'git', url: `https://github.com/${process.env.GITHUB_REPOSITORY}.git` },
+          }));
+          NODE
+      - name: Diagnose with a real GitHub OIDC token
+        id: doctor
+        uses: ./
+        with:
+          package-dir: ${{ runner.temp }}/oidc-doctor-package
+          expected-owner: ${{ github.repository_owner }}
+          expected-repository: ${{ github.event.repository.name }}
+          expected-workflow: smoke.yml
+      - name: Verify the happy path
+        env:
+          DOCTOR_RESULT: ${{ steps.doctor.outputs.result }}
+        run: test "$DOCTOR_RESULT" = pass

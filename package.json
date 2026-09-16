@@ -1,0 +1,40 @@
+{
+  "name": "oidc-publish-doctor",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Diagnose npm Trusted Publishing configuration before npm publish.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build": "node scripts/build.mjs",
+    "package": "npm run build",
+    "check:dist": "node scripts/build.mjs --check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "all": "npm run lint && npm run format:check && npm run typecheck && npm test && npm run build && npm run check:dist && npm run test:bundle",
+    "test:bundle": "node scripts/smoke.mjs"
+  },
+  "dependencies": {
+    "@actions/core": "3.0.1",
+    "@actions/exec": "3.0.0",
+    "semver": "7.8.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "24.13.5",
+    "@types/semver": "7.8.0",
+    "esbuild": "0.28.2",
+    "eslint": "10.10.0",
+    "prettier": "3.9.7",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.70.0",
+    "vitest": "5.0.1"
+  }
+}

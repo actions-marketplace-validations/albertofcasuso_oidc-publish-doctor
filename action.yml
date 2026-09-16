@@ -1,0 +1,40 @@
+name: OIDC Publish Doctor
+description: Diagnose npm Trusted Publishing configuration before npm publish.
+branding:
+  icon: check-circle
+  color: blue
+inputs:
+  package-dir:
+    description: Directory containing the package.json that will be published.
+    default: '.'
+  expected-owner:
+    description: Case-sensitive owner configured in the npm Trusted Publisher.
+    required: false
+  expected-repository:
+    description: Case-sensitive repository name (without owner) configured on npm.
+    required: false
+  expected-workflow:
+    description: Caller workflow filename configured on npm, including .yml or .yaml.
+    required: false
+  expected-environment:
+    description: Case-sensitive GitHub environment configured on npm. Empty skips comparison.
+    required: false
+  fail-on-warning:
+    description: Treat warnings as failures.
+    default: 'false'
+outputs:
+  result:
+    description: pass, warn, or fail. fail-on-warning promotes warn to fail.
+  issues:
+    description: JSON array of diagnostics, including informational findings.
+  github-owner:
+    description: Observed GitHub repository owner.
+  github-repository:
+    description: Observed GitHub repository in owner/name form.
+  workflow:
+    description: Observed caller workflow filename.
+  environment:
+    description: Observed GitHub environment, or empty when unavailable.
+runs:
+  using: node24
+  main: dist/index.js
