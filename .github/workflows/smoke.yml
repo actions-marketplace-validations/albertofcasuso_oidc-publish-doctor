@@ -35,7 +35,7 @@ jobs:
         uses: ./
         with:
           package-dir: ${{ runner.temp }}/oidc-doctor-package
-          expected-owner: ${{ github.repository_owner }}
+          expected-owner: afcasuso
           expected-repository: ${{ github.event.repository.name }}
           expected-workflow: smoke.yml
       - name: Verify the happy path
