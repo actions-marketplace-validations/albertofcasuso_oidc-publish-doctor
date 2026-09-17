@@ -15,9 +15,9 @@ failures with observed values and concrete fixes. npm still performs the publish
 
 Configure a GitHub Trusted Publisher in your package's npm settings first. Supply
 those same values as `expected-*` inputs. This Action does **not** retrieve your
-saved npm configuration. The first public beta is
-`albertofcasuso/oidc-publish-doctor@v0.1.0-beta.1`. Pin that exact tag while
-evaluating the Action; a stable major tag will follow a supported release.
+saved npm configuration. The first stable release is
+`albertofcasuso/oidc-publish-doctor@v0.1.0`. Pin that exact tag while evaluating
+the Action.
 
 Save this as `.github/workflows/publish.yml` in the package repository:
 
@@ -43,7 +43,7 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       - name: Diagnose npm Trusted Publishing
-        uses: albertofcasuso/oidc-publish-doctor@v0.1.0-beta.1
+        uses: albertofcasuso/oidc-publish-doctor@v0.1.0
         with:
           expected-owner: my-org
           expected-repository: my-package
@@ -194,8 +194,8 @@ never publishes or contacts npm to exchange the token. It needs no npm secrets,
 Trusted Publisher configuration, release tag, or Marketplace listing. This tests
 GitHub token acquisition and diagnostics, not npm's acceptance of the identity.
 
-This is a beta release. Use an exact release tag until the compatibility promise of
-a stable major tag is established.
+This is the first stable release. Use an exact release tag; releases before 1.0.0
+may introduce breaking changes.
 
 For an end-to-end npm publication, follow the
 [sandbox publishing guide](docs/sandbox-publishing.md). Its manual workflow

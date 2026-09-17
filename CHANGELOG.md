@@ -5,6 +5,11 @@ All notable changes to OIDC Publish Doctor are documented here.
 The project follows [Semantic Versioning](https://semver.org/). Releases before
 `1.0.0` may introduce breaking changes.
 
+## [0.1.0] - 2026-09-17
+
+First stable release. There are no functional changes relative to
+`0.1.0-beta.1`.
+
 ## [0.1.0-beta.1] - 2026-09-17
 
 First public beta.
@@ -33,3 +38,4 @@ First public beta.
   explicit expected-absent environment (`ENV002`) are deferred.
 
 [0.1.0-beta.1]: https://github.com/albertofcasuso/oidc-publish-doctor/releases/tag/v0.1.0-beta.1
+[0.1.0]: https://github.com/albertofcasuso/oidc-publish-doctor/releases/tag/v0.1.0
