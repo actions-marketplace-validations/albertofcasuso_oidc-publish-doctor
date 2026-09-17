@@ -1,4 +1,4 @@
-# Copy into your package repository, replace OWNER, and enable workflow_dispatch.
+# Copy into your package repository and enable workflow_dispatch.
 # Disabled in this Action's own repository: this project is not an npm package.
 name: Example npm publish
 on:
@@ -20,7 +20,7 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       - name: Diagnose npm Trusted Publishing
-        uses: OWNER/oidc-publish-doctor@v1
+        uses: albertofcasuso/oidc-publish-doctor@v0.1.0-beta.1
         with:
           expected-owner: my-org
           expected-repository: my-package

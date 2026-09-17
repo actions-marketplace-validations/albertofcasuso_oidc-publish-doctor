@@ -15,8 +15,9 @@ failures with observed values and concrete fixes. npm still performs the publish
 
 Configure a GitHub Trusted Publisher in your package's npm settings first. Supply
 those same values as `expected-*` inputs. This Action does **not** retrieve your
-saved npm configuration. Replace `OWNER` below with the repository owner when this
-Action is released; `OWNER/oidc-publish-doctor@v1` is a release placeholder.
+saved npm configuration. The first public beta is
+`albertofcasuso/oidc-publish-doctor@v0.1.0-beta.1`. Pin that exact tag while
+evaluating the Action; a stable major tag will follow a supported release.
 
 Save this as `.github/workflows/publish.yml` in the package repository:
 
@@ -42,7 +43,7 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       - name: Diagnose npm Trusted Publishing
-        uses: OWNER/oidc-publish-doctor@v1
+        uses: albertofcasuso/oidc-publish-doctor@v0.1.0-beta.1
         with:
           expected-owner: my-org
           expected-repository: my-package
@@ -185,16 +186,16 @@ CI checks this before building so it cannot hide an uncommitted bundle update.
 The pipeline is `collectors → DiagnosticContext → pure rules → reporters`.
 `src/action.ts` is the GitHub adapter. Tests exercise rule fixtures, normalization,
 missing observations, secret redaction, output policy, and reporting failures.
-Actual GitHub OIDC acquisition still needs a hosted-runner integration test before
-the first public release. After pushing this repository (including `dist/`) to
-GitHub's default branch, open **Actions → Test real GitHub OIDC → Run workflow**.
+GitHub OIDC acquisition has been verified on a GitHub-hosted runner. You can repeat
+the check in **Actions → Test real GitHub OIDC → Run workflow**.
 The [manual smoke workflow](.github/workflows/smoke.yml) executes the local Action
 with a real token and an isolated, private package fixture. It requires `pass` and
 never publishes or contacts npm to exchange the token. It needs no npm secrets,
 Trusted Publisher configuration, release tag, or Marketplace listing. This tests
 GitHub token acquisition and diagnostics, not npm's acceptance of the identity.
 
-Create a tested release/tag before replacing the `OWNER/...@v1` documentation placeholder.
+This is a beta release. Use an exact release tag until the compatibility promise of
+a stable major tag is established.
 
 For an end-to-end npm publication, follow the
 [sandbox publishing guide](docs/sandbox-publishing.md). Its manual workflow
