@@ -1,0 +1,75 @@
+name: Publish sandbox with OIDC
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: New unpublished sandbox version (for example 0.0.2)
+        required: true
+        type: string
+        default: '0.0.2'
+permissions:
+  contents: read
+concurrency:
+  group: publish-sandbox
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      # The local sandbox is gitignored. Generate the complete package using
+      # tracked workflow content, without depending on that local directory.
+      - name: Generate sandbox package
+        shell: bash
+        env:
+          SANDBOX_VERSION: ${{ inputs.version }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { mkdirSync, writeFileSync, copyFileSync } from 'node:fs';
+          import { join } from 'node:path';
+
+          const version = process.env.SANDBOX_VERSION;
+          const parts = version?.split('.') ?? [];
+          if (parts.length !== 3 || !parts.every(part => /^(0|[1-9][0-9]*)$/.test(part) && Number.isSafeInteger(Number(part)))) {
+            throw new Error('Enter a new version in X.Y.Z format, for example 0.0.2.');
+          }
+          const directory = join(process.env.RUNNER_TEMP, 'oidc-doctor-publish');
+          mkdirSync(directory);
+          writeFileSync(join(directory, 'package.json'), JSON.stringify({
+            name: 'albertofcasuso-oidc-publish-doctor-sandbox',
+            version,
+            description: 'Disposable package for testing OIDC Publish Doctor and npm Trusted Publishing.',
+            type: 'module',
+            main: './index.js',
+            exports: './index.js',
+            files: ['index.js'],
+            license: 'MIT',
+            repository: {
+              type: 'git',
+              url: `git+https://github.com/${process.env.GITHUB_REPOSITORY}.git`,
+            },
+            publishConfig: { access: 'public', registry: 'https://registry.npmjs.org/' },
+          }, null, 2) + '\n');
+          writeFileSync(join(directory, 'index.js'), "export function hello() {\n  return 'Hello from OIDC Publish Doctor sandbox!';\n}\n");
+          writeFileSync(join(directory, 'README.md'), '# OIDC Publish Doctor sandbox\n\nDisposable package generated in GitHub Actions to test npm Trusted Publishing.\n');
+          copyFileSync('LICENSE', join(directory, 'LICENSE'));
+          NODE
+      - name: Diagnose npm Trusted Publishing
+        uses: ./
+        with:
+          package-dir: ${{ runner.temp }}/oidc-doctor-publish
+          expected-owner: albertofcasuso
+          expected-repository: oidc-publish-doctor
+          expected-workflow: publish-sandbox.yml
+          fail-on-warning: 'true'
+      - name: Publish sandbox to npm
+        working-directory: ${{ runner.temp }}/oidc-doctor-publish
+        run: npm publish

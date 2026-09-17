@@ -196,4 +196,9 @@ GitHub token acquisition and diagnostics, not npm's acceptance of the identity.
 
 Create a tested release/tag before replacing the `OWNER/...@v1` documentation placeholder.
 
+For an end-to-end npm publication, follow the
+[sandbox publishing guide](docs/sandbox-publishing.md). Its manual workflow
+generates the sandbox package in the runner, runs Doctor, and publishes a new
+version through OIDC. Configure the npm Trusted Publisher before running it.
+
 MIT licensed.

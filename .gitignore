@@ -5,3 +5,6 @@ coverage/
 .env
 .env.*
 *.log
+
+# Local-only package for manual npm publishing experiments.
+/oidc-publish-doctor-sandbox/
