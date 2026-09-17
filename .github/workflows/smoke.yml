@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
-          node-version: '24'
+          node-version: "24"
           package-manager-cache: false
       # The Action repository has no package repository metadata yet. Create an
       # isolated fixture that follows this GitHub repository's actual identity.
@@ -35,8 +35,8 @@ jobs:
         uses: ./
         with:
           package-dir: ${{ runner.temp }}/oidc-doctor-package
-          expected-owner: afcasuso
-          expected-repository: ${{ github.event.repository.name }}
+          expected-owner: ${{ github.repository_owner }}
+          expected-repository: otro-repo
           expected-workflow: smoke.yml
       - name: Verify the happy path
         env:
