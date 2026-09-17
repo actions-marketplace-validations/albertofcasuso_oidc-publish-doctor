@@ -27,7 +27,7 @@ export function decodeNpmError(
       actual: symptoms.join(', '),
       fix: candidates.length
         ? `Review possible causes already detected: ${candidates.join(', ')}. Also verify registry and package access.`
-        : 'Verify the npm Trusted Publisher fields, registry, package existence and publishing access; the preflight checks cannot verify npm server-side settings.',
+        : 'Local preflight checks found no blocking issue. Verify the Trusted Publisher is saved on this exact npm package, that its owner/repository/caller workflow/environment match, and that it allows npm publish. Also check the registry and npm OIDC token exchange; neither npm server-side settings nor the exchange is verified by these checks.',
       likelySymptoms: symptoms,
     },
   ];

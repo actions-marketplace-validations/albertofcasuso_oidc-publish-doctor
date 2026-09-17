@@ -24,7 +24,7 @@ inputs:
     default: 'false'
 outputs:
   result:
-    description: pass, warn, or fail. fail-on-warning promotes warn to fail.
+    description: Local preflight result (pass, warn, fail), not npm authorization. fail-on-warning promotes warn to fail.
   issues:
     description: JSON array of diagnostics, including informational findings.
   github-owner:

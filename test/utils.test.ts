@@ -87,3 +87,15 @@ it('decodes ambiguous npm symptoms without echoing logs or claiming a unique cau
   expect(decodeNpmError('E404 GET install failed', c)).toEqual([]);
   expect(decodeNpmError('success', c)).toEqual([]);
 });
+it('points ENEEDAUTH after a passing preflight at unverified npm settings without inventing a cause', () => {
+  const context = happy();
+  const [hint] = decodeNpmError(
+    'npm error code ENEEDAUTH\nRun npm adduser',
+    context,
+  );
+  expect(hint?.severity).toBe('info');
+  expect(hint?.fix).toContain('this exact npm package');
+  expect(hint?.fix).toContain('allows npm publish');
+  expect(hint?.fix).toContain('OIDC token exchange');
+  expect(hint?.message).toContain('do not identify a unique OIDC failure');
+});

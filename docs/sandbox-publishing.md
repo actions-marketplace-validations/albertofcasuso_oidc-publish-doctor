@@ -63,3 +63,25 @@ Source: [npm publish](https://docs.npmjs.com/cli/v11/commands/npm-publish/).
 
 For negative diagnostic tests, use the non-publishing `smoke.yml` workflow. That
 lets you check intentionally incorrect expected values without publishing a version.
+
+### Why Doctor can pass before ENEEDAUTH
+
+The supplied `expected-*` values can match GitHub even when the corresponding
+publisher on npm is missing, configured differently, or does not permit direct
+publishing. A readable GitHub OIDC token also does not prove that npm accepted a
+token exchange. Doctor deliberately performs no exchange with npm.
+
+For example, the sandbox run on 2026-09-17 used Node 24.20.0 and npm 11.19.0 and
+obtained a GitHub token, but publishing still ended with ENEEDAUTH. The normal log
+did not include the cause of the failed authentication. npm 11.19.0 logs OIDC
+acquisition/exchange failures at verbose level and can then emit the generic
+ENEEDAUTH message when no credentials are available. Confirm the saved npm
+configuration before attributing this error to a specific mismatch. The token
+deprecation notice alone is not proof that this workflow used a legacy npm token.
+
+In this run, the maintainer subsequently confirmed an incorrect owner in npm's
+Trusted Publisher. The workflow's expected-owner already matched GitHub, so the
+preflight comparison passed while the saved npm configuration remained different.
+
+Sources: [npm 11.19.0 OIDC handling](https://github.com/npm/cli/blob/v11.19.0/lib/utils/oidc.js)
+and [publish authentication checks](https://github.com/npm/cli/blob/v11.19.0/lib/commands/publish.js).

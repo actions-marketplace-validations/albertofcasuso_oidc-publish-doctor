@@ -15,7 +15,8 @@ export function renderSummary(
   result: Result,
 ): string {
   return (
-    `<h1>OIDC Publish Doctor</h1>\n<p>Result: <strong>${result}</strong></p>\n` +
+    `<h1>OIDC Publish Doctor</h1>\n<p>Local preflight result: <strong>${result}</strong></p>\n` +
+    '<p><strong>npm publish authorization is not verified.</strong> The expected-* inputs come from the workflow, not npm. Check the Trusted Publisher on this exact npm package and ensure it allows npm publish.</p>\n' +
     '<h2>Environment</h2>\n<table>' +
     environmentRows(c)
       .map(
@@ -44,6 +45,6 @@ export function renderSummary(
       .filter((d) => d.fix)
       .map((d) => `<p>${escape(d.ruleId)}</p><pre>${escape(d.fix ?? '')}</pre>`)
       .join('\n') +
-    '\n<p>The configuration saved on npm is not verified by this Action.</p>\n'
+    '\n<p>A pass means no implemented preflight checks found a problem. This Action does not exchange the OIDC token with npm or verify its saved publisher settings.</p>\n'
   );
 }

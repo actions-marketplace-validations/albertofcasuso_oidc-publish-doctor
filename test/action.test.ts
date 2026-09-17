@@ -4,6 +4,7 @@ import { collectContext } from '../src/collectors/index.js';
 import { runAction } from '../src/action.js';
 import { happy } from './fixtures/contexts.js';
 import { renderSummary } from '../src/reporters/summary.js';
+import { renderConsole } from '../src/reporters/console.js';
 import { inspectNpmrc } from '../src/collectors/npm.js';
 import { Redactor, redactEnvironment } from '../src/utils/redact.js';
 
@@ -39,6 +40,20 @@ it('writes all six outputs and a Job Summary on successful execution', async () 
   );
   expect(core.summary.write).toHaveBeenCalled();
   expect(core.setFailed).not.toHaveBeenCalled();
+});
+it('makes unverified npm authorization explicit even when all preflight checks pass', () => {
+  const context = happy();
+  const consoleReport = renderConsole(context, [], 'pass');
+  const summary = renderSummary(context, [], 'pass');
+  expect(consoleReport).toContain('Local preflight result: pass');
+  expect(consoleReport).toContain('npm authorization: NOT VERIFIED');
+  expect(consoleReport).toContain('they are not read from npm');
+  expect(summary).toContain('npm publish authorization is not verified');
+  expect(summary).toContain('not npm');
+  for (const report of [consoleReport, summary]) {
+    expect(report).toContain(context.package.name);
+    expect(report).toContain('this exact npm package');
+  }
 });
 it('sets failing outputs before marking the Action failed, including fail-on-warning', async () => {
   const c = happy();

@@ -23343,6 +23343,11 @@ async function collectContext(inputs, getToken, env = process.env) {
 // src/reporters/console.ts
 function environmentRows(c) {
   return [
+    ["Package", c.package.name ?? "unavailable"],
+    [
+      "npm authorization",
+      "NOT VERIFIED \u2014 saved Trusted Publisher settings, allowed actions and token exchange"
+    ],
     ["Runner", c.github.runnerEnvironment ?? "unavailable"],
     ["Node on PATH", c.nodeVersion ?? "unavailable"],
     ["npm on PATH", c.npmVersion ?? "unavailable"],
@@ -23384,8 +23389,9 @@ function renderConsole(c, diagnostics, result) {
     "",
     ...diagnostics.map((d) => `${formatDiagnostic(d)}
 `),
-    `${result === "pass" ? "\u2713" : result === "warn" ? "\u26A0" : "\u2717"} Result: ${result}`,
-    "Preflight checks do not verify the configuration saved on npm."
+    `${result === "pass" ? "\u2713" : result === "warn" ? "\u26A0" : "\u2717"} Local preflight result: ${result}`,
+    "expected-* inputs are supplied by the workflow; they are not read from npm.",
+    "A pass does not confirm npm publish authorization. Verify the Trusted Publisher on this exact npm package, including permission for npm publish."
   ].join("\n");
 }
 
@@ -23407,14 +23413,15 @@ function escape(value) {
 }
 function renderSummary(c, diagnostics, result) {
   return `<h1>OIDC Publish Doctor</h1>
-<p>Result: <strong>${result}</strong></p>
+<p>Local preflight result: <strong>${result}</strong></p>
+<p><strong>npm publish authorization is not verified.</strong> The expected-* inputs come from the workflow, not npm. Check the Trusted Publisher on this exact npm package and ensure it allows npm publish.</p>
 <h2>Environment</h2>
 <table>` + environmentRows(c).map(
     ([key, value]) => `<tr><th>${escape(key)}</th><td>${escape(value)}</td></tr>`
   ).join("") + "</table>\n<h2>Diagnostics</h2>\n" + (diagnostics.length ? diagnostics.map(
     (d) => `<h3>${escape(d.ruleId)} \u2014 ${escape(d.title)} (${d.severity})</h3>
 <p>${escape(d.message)}</p>` + (d.expected !== void 0 ? `<p>Expected:</p><pre>${escape(d.expected)}</pre>` : "") + (d.actual !== void 0 ? `<p>Observed:</p><pre>${escape(d.actual)}</pre>` : "")
-  ).join("\n") : "<p>No issues detected by the preflight checks.</p>") + "\n<h2>Suggested fixes</h2>\n" + diagnostics.filter((d) => d.fix).map((d) => `<p>${escape(d.ruleId)}</p><pre>${escape(d.fix ?? "")}</pre>`).join("\n") + "\n<p>The configuration saved on npm is not verified by this Action.</p>\n";
+  ).join("\n") : "<p>No issues detected by the preflight checks.</p>") + "\n<h2>Suggested fixes</h2>\n" + diagnostics.filter((d) => d.fix).map((d) => `<p>${escape(d.ruleId)}</p><pre>${escape(d.fix ?? "")}</pre>`).join("\n") + "\n<p>A pass means no implemented preflight checks found a problem. This Action does not exchange the OIDC token with npm or verify its saved publisher settings.</p>\n";
 }
 
 // src/rules/auth.ts

@@ -2,6 +2,11 @@ import type { Diagnostic, DiagnosticContext, Result } from '../types.js';
 
 export function environmentRows(c: DiagnosticContext): [string, string][] {
   return [
+    ['Package', c.package.name ?? 'unavailable'],
+    [
+      'npm authorization',
+      'NOT VERIFIED — saved Trusted Publisher settings, allowed actions and token exchange',
+    ],
     ['Runner', c.github.runnerEnvironment ?? 'unavailable'],
     ['Node on PATH', c.nodeVersion ?? 'unavailable'],
     ['npm on PATH', c.npmVersion ?? 'unavailable'],
@@ -60,7 +65,8 @@ export function renderConsole(
     ),
     '',
     ...diagnostics.map((d) => `${formatDiagnostic(d)}\n`),
-    `${result === 'pass' ? '✓' : result === 'warn' ? '⚠' : '✗'} Result: ${result}`,
-    'Preflight checks do not verify the configuration saved on npm.',
+    `${result === 'pass' ? '✓' : result === 'warn' ? '⚠' : '✗'} Local preflight result: ${result}`,
+    'expected-* inputs are supplied by the workflow; they are not read from npm.',
+    'A pass does not confirm npm publish authorization. Verify the Trusted Publisher on this exact npm package, including permission for npm publish.',
   ].join('\n');
 }
